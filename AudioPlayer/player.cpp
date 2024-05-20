@@ -2,6 +2,8 @@
 #include <vector>
 #include <portaudio.h>
 #include <sndfile.h>
+#include <cmath>
+
 
 int main() {
     SNDFILE *file;
@@ -42,8 +44,6 @@ int main() {
     // Close the audio file
     sf_close(file);
 
-    // Print vector to view information
-
     // Initialize PortAudio
     PaError err = Pa_Initialize();
     if (err != paNoError) {
@@ -54,7 +54,7 @@ int main() {
     // Open an audio stream
     PaStream *stream;
     err = Pa_OpenDefaultStream(&stream, 0, sfinfo.channels, paFloat32, sfinfo.samplerate, paFramesPerBufferUnspecified, nullptr, nullptr);
-    if (err != paNoError) {
+    if (err != paNoError) { 
         std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
         Pa_Terminate();
         return 1;
@@ -68,7 +68,7 @@ int main() {
         Pa_Terminate();
         return 1;
     }
-
+    
     // Write audio data to the stream
     err = Pa_WriteStream(stream, audioData.data(), sfinfo.frames);
     if (err != paNoError) {
@@ -78,6 +78,7 @@ int main() {
         Pa_Terminate();
         return 1;
     }
+
 
     // Wait for the stream to finish playing
     while (Pa_IsStreamActive(stream)) {
