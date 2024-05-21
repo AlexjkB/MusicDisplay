@@ -6,12 +6,14 @@
 #include <GLFW/glfw3.h>
 #include <fftw3.h>
 #include <math.h>
+#include <thread>
 
 // Constants
 const int BUFFER_SIZE = 1024; // Buffer size for real-time processing
 
 // Global variables for audio buffer
 std::vector<float> audioBuffer(BUFFER_SIZE);
+std::vector<float> amplitudeSpectrum;
 
 // Function to perform FFT
 void performFFT(const std::vector<float>& audioBuffer, std::vector<float>& amplitudeSpectrum) {
@@ -35,6 +37,11 @@ void performFFT(const std::vector<float>& audioBuffer, std::vector<float>& ampli
     fftw_destroy_plan(plan);
     fftw_free(in);
     fftw_free(out);
+}
+
+// Thread function to handle FFT
+void fftThreadFunction(const std::vector<float>& buffer) {
+    performFFT(buffer, amplitudeSpectrum);
 }
 
 // Function to calculate amplitude
@@ -82,6 +89,8 @@ int audioCallback(const void *inputBuffer, void *outputBuffer, unsigned long fra
         out[i] = audioData->at(offset + i);
     }
     offset += framesPerBuffer;
+    std::thread fftThread(fftThreadFunction);
+    fftThread.detach();
 
     return paContinue;
 }
@@ -196,7 +205,6 @@ int main() {
         }
 
         // Perform FFT and calculate amplitude
-        std::vector<float> amplitudeSpectrum;
         performFFT(currentBuffer, amplitudeSpectrum);
         float amplitude = calculateAmplitude(currentBuffer);
 

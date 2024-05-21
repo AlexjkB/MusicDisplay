@@ -1,9 +1,9 @@
 LIBS = -lglut -lGLU -lGL -lsndfile -lportaudio -lGLEW -lglfw -lfftw3
 
-all: player player2
+all: player player3
 
-player: player.cpp
+player: player.cpp 
 	g++ -o player player.cpp $(LIBS)
 
-player2: player2.cpp
-	g++ -o player2 player2.cpp $(LIBS)
+player3: player3.cpp 
+	g++ -o player3 player3.cpp $(LIBS)
